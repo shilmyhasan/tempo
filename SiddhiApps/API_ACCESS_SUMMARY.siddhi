@@ -3,11 +3,12 @@
 
 -- Please refer to https://docs.wso2.com/display/SP400/Quick+Start+Guide on getting started with SP editor. 
 @source(type='wso2event', wso2.stream.id = 'org.wso2.apimgt.statistics.core:1.0.0', @map(type='wso2event')  )
-define stream access(meta_clientType string, applicationConsumerKey	string, applicationName	string, applicationId string, applicationOwner string, apiContext string, apiName string, apiResourcePath string, apiResourceTemplate string, apiMethod	string, apiVersion string, apiPublisher	string, apiTier	string, apiHostname	string, username string, userTenantDomain string, userIp string, userAgent string, requestTimestamp	long, throttledOut bool, responseTime long, serviceTime	long, backendTime long, responseCacheHit bool, responseSize	long, protocol string, responseCode	int, destination	string, responseTimestamp long, securityLatency	long, throttlingLatency	long, requestMediationLatency long, responseMediationLatency long, backendLatency long, otherLatency long);
+define stream access(meta_clientType string, applicationConsumerKey	string, applicationName	string, applicationId string, applicationOwner string, apiContext string, apiName string, apiResourcePath string, apiResourceTemplate string, apiMethod	string, apiVersion string, apiPublisher	string, apiTier	string, apiHostname	string, username string, userTenantDomain string, userIp string, userAgent string, requestTimestamp	long, throttledOut bool, responseTime long, serviceTime	long, backendTime long, responseCacheHit bool, responseSize	long, protocol string, responseCode	int, destination string, responseTimestamp long, securityLatency	long, throttlingLatency	long, requestMediationLatency long, responseMediationLatency long, backendLatency long, otherLatency long);
 
 @store(type="rdbms",datasource="APIM_ANALYTICS_DB") 
 define aggregation ApiAccessAggregation
 from access 
-select apiName, apiVersion, apiPublisher, apiContext, apiHostname, applicationConsumerKey, username, max(requestTimestamp) as max_request_time, requestTimestamp, count() as total_request_count
-group by applicationConsumerKey, apiContext, apiVersion, username, apiHostname, apiPublisher, apiResourceTemplate, apiMethod, userAgent, userIp 
+select applicationId, apiName, apiVersion, apiPublisher, apiContext, apiHostname, apiResourceTemplate,apiMethod, username, userTenantDomain, max(requestTimestamp) as max_request_time, requestTimestamp, count() as total_request_count, destination
+group by applicationId, apiName, apiVersion, apiPublisher,apiContext, apiHostname,apiResourceTemplate, apiMethod, username, userTenantDomain, destination
 aggregate by requestTimestamp every sec...year;
+
